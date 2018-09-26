@@ -3,6 +3,11 @@ var button = document.createElement('button');
 button.innerText = 'Login';
 document.getElementById('buttonbox').appendChild(button);
 
-socket.addEventListener('open', function(){
-  console.log('=========I\'m connected===========');
+//socket.addEventListener('open', function () {
+//});
+
+socket.addEventListener('message', function(message) {
+ console.log(message); 
 });
+
+

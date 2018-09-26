@@ -7,14 +7,18 @@ var server = new ws.Server({
 var clientsockets = {};
 
 server.on('connection',function(socket){
-  console.log('============someone connected===============');
   //crypto.randomBytes returns a buffer ---- https://nodejs.org/api/buffer.html
   var uniquesocketid = crypto.randomBytes(7).toString('hex');
   clientsockets[uniquesocketid] = {};
   clientsockets[uniquesocketid].socket = socket;
   clientsockets[uniquesocketid].sockid = uniquesocketid;
   clientsockets[uniquesocketid].handle = uniquesocketid;
-  console.log(clientsockets)
+});
+
+process.stdin.on('data', function (data) {
+  for(var socks in clientsockets){
+    clientsockets[socks].socket.send(data.toString());
+  }
 });
 
 
