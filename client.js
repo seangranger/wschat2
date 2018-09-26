@@ -8,7 +8,10 @@ document.getElementById('buttonbox').appendChild(button);
 */
 
 socket.addEventListener('message', function(message) {
- console.log(message); 
+  console.log(message);
+  var incobj = JSON.parse(message.data);
+  var objmsg = incobj.msg;
+  console.log(objmsg); 
 });
 
 var sendmssg = function () {

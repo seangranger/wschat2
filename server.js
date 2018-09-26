@@ -13,16 +13,21 @@ server.on('connection',function(socket){
   clientsockets[uniquesocketid].socket = socket;
   clientsockets[uniquesocketid].sockid = uniquesocketid;
   clientsockets[uniquesocketid].handle = uniquesocketid;
+
   socket.on('message', function (message) {
     var incobj = JSON.parse(message);
     var objmsg = incobj.msg;
     console.log(uniquesocketid.trim()+' ('+clientsockets[uniquesocketid].handle+') : '+ objmsg.trim());
   });
+
 });
 
 process.stdin.on('data', function (data) {
+  var outobj = {};
+  outobj.msg = data.toString().trim();
+  var json = JSON.stringify(outobj);
   for(var socks in clientsockets){
-    clientsockets[socks].socket.send(data.toString().trim());
+    clientsockets[socks].socket.send(json);
   }
 });
 
