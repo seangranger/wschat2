@@ -21,3 +21,9 @@ button.addEventListener('click', function () {
   mssgsender();
 });
 
+chatinput.addEventListener('keypress',function(e){
+  if(e.keyCode === 13){
+    mssgsender();
+  }
+});
+
