@@ -13,11 +13,14 @@ server.on('connection',function(socket){
   clientsockets[uniquesocketid].socket = socket;
   clientsockets[uniquesocketid].sockid = uniquesocketid;
   clientsockets[uniquesocketid].handle = uniquesocketid;
+  socket.on('message', function (message) {
+    console.log(uniquesocketid.trim()+' ('+clientsockets[uniquesocketid].handle+') : '+message);
+  });
 });
 
 process.stdin.on('data', function (data) {
   for(var socks in clientsockets){
-    clientsockets[socks].socket.send(data.toString());
+    clientsockets[socks].socket.send(data.toString().trim());
   }
 });
 
