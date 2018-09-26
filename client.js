@@ -11,19 +11,20 @@ socket.addEventListener('message', function(message) {
  console.log(message); 
 });
 
-var mssgsender = function () {
+var sendmssg = function () {
   //next step is to turn messages into json objects before this goes any further
-  socket.send(document.getElementById('chatinput').value.toString().trim());
+  var msgobj = {};
+  msgobj.msg = document.getElementById('chatinput').value.toString().trim(); 
+  var json = JSON.stringify(msgobj);
+  socket.send(json);
   document.getElementById('chatinput').value = '';
 }
 
-button.addEventListener('click', function () {
-  mssgsender();
-});
+button.addEventListener('click', sendmssg);
 
 chatinput.addEventListener('keypress',function(e){
   if(e.keyCode === 13){
-    mssgsender();
+    sendmssg();
   }
 });
 

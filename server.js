@@ -14,7 +14,9 @@ server.on('connection',function(socket){
   clientsockets[uniquesocketid].sockid = uniquesocketid;
   clientsockets[uniquesocketid].handle = uniquesocketid;
   socket.on('message', function (message) {
-    console.log(uniquesocketid.trim()+' ('+clientsockets[uniquesocketid].handle+') : '+message);
+    var incobj = JSON.parse(message);
+    var objmsg = incobj.msg;
+    console.log(uniquesocketid.trim()+' ('+clientsockets[uniquesocketid].handle+') : '+ objmsg.trim());
   });
 });
 
