@@ -15,9 +15,10 @@ socket.addEventListener('message', function(message) {
 });
 
 var sendmssg = function () {
-  //next step is to turn messages into json objects before this goes any further
   var msgobj = {};
   msgobj.msg = document.getElementById('chatinput').value.toString().trim(); 
+  //line below is for server functionality testing only
+  msgobj.type = 'bcastmsg';
   var json = JSON.stringify(msgobj);
   socket.send(json);
   document.getElementById('chatinput').value = '';
