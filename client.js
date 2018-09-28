@@ -81,6 +81,22 @@ var bcastmsg = function(incobj){
 
 actions.bcastmsg = bcastmsg;
 
+var ulupdate = function(incobj){
+  //remove child elems
+ var curruserlist = document.getElementById('userlist');
+ while (curruserlist.firstChild) {
+   curruserlist.removeChild(curruserlist.firstChild);
+ }
+  var updatedul = incobj.ul;
+  for(var newhandle in updatedul){
+    var unli = document.createElement('li');
+    unli.innerText = updatedul[newhandle]; 
+    curruserlist.appendChild(unli);
+  }
+};
+
+actions.ulupdate = ulupdate;
+
 var sendmssg = function (input) {
   var msgobj = {};
   msgobj.msg = input; 

@@ -30,6 +30,7 @@ var reqhandlechange = function(incobj){
       outobj.msg = 'your handle has been changed to: '+clientsocks[incobj.id].handle;
       var json = JSON.stringify(outobj);
       clientsocks[incobj.id].socket.send(json);
+      objactions.updateul();
     }
   };
 
@@ -46,6 +47,26 @@ var bcastmsg = function(incobj){
 
 objactions.bcastmsg = bcastmsg;
 
+var updateul = function(){
+  var outobj = {};
+  var ul = [];
+  for (var sock in clientsocks){
+    if(clientsocks[sock].handle !== clientsocks[sock].sockid){
+      ul.push(clientsocks[sock].handle);
+    }
+  }
+  outobj.type = 'ulupdate';
+  outobj.ul = ul;
+  var json = JSON.stringify(outobj);
+  for (var sock in clientsocks){
+    if(clientsocks[sock].handle !== clientsocks[sock].sockid){
+      clientsocks[sock].socket.send(json);
+    }
+  }
+};
+
+objactions.updateul = updateul;
+
 //should be process incobj
 var handleincobj = function (incobj) {
   var reqact = incobj.type;
@@ -53,7 +74,6 @@ var handleincobj = function (incobj) {
   action(incobj);
 };
 
-//server needs to handle connection close
 server.on('connection',function(socket){
   //crypto.randomBytes returns a buffer ---- https://nodejs.org/api/buffer.html
   var sockid = crypto.randomBytes(7).toString('hex');
@@ -70,6 +90,15 @@ server.on('connection',function(socket){
     }
     handleincobj(incobj);
   });
+  //tab close is not closing socket?
+/*
+  socket.on('end', function(){
+    //Can we actually assume it was closed by client?
+    console.log('Connection closed by client.');
+    console.log('Removing '+clientsocks[sockid]+' ('+clientsocks[sockid].handle+') from users');
+    delete clientsocks[sockid];
+  });
+  */
 });
 
 process.stdin.on('data', function (data) {
