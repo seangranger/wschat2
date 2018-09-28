@@ -7,6 +7,34 @@ var server = new ws.Server({
 var clientsocks = {};
 var objactions = {};
 
+var reqhandlechange = function(incobj){
+  var exists = false;
+  for (var sock in clientsocks){
+    //Sanitization should be checked on server side as well
+    if(incobj.reqdhandle === clientsocks[sock].handle){
+      exists = true;
+    }
+  }
+  if(exists === true){
+      var outobj = {};
+      outobj.type = 'denial';
+      outobj.msg = 'That user name is unavailable. Please choose a different one.'; 
+      var json = JSON.stringify(outobj);
+      clientsocks[incobj.id].socket.send(json);
+      return;
+    }else{
+      clientsocks[incobj.id].handle = incobj.reqdhandle;
+      var outobj = {};
+      outobj.type = 'unconfirm';
+      outobj.handle = clientsocks[incobj.id].handle;
+      outobj.msg = 'your handle has been changed to: '+clientsocks[incobj.id].handle;
+      var json = JSON.stringify(outobj);
+      clientsocks[incobj.id].socket.send(json);
+    }
+  };
+
+objactions.reqhandlechange = reqhandlechange;
+
 var bcastmsg = function(incobj){
   var json = JSON.stringify(incobj);
   for(var sock in clientsocks){
@@ -18,11 +46,13 @@ var bcastmsg = function(incobj){
 
 objactions.bcastmsg = bcastmsg;
 
+//should be process incobj
 var handleincobj = function (incobj) {
   var reqact = incobj.type;
   var action = objactions[reqact];
   action(incobj);
 };
+
 //server needs to handle connection close
 server.on('connection',function(socket){
   //crypto.randomBytes returns a buffer ---- https://nodejs.org/api/buffer.html
@@ -35,8 +65,9 @@ server.on('connection',function(socket){
   socket.on('message', function (message) {
     var incobj = JSON.parse(message);
     incobj.id = sockid;
-    var objmsg = incobj.msg;
-    console.log(sockid.trim()+' ('+clientsocks[sockid].handle+') : '+ objmsg.trim());
+    if(objmsg !== undefined){
+      var objmsg = incobj.msg;
+    }
     handleincobj(incobj);
   });
 });
