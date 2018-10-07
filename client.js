@@ -99,8 +99,12 @@ var dmwincreator = function(incobjnewhandle){
 
 actions.dmwincreator = dmwincreator;
 
-var showchatwin = function(){
-  
+var showchatwin = function(newhandle){
+  var divcurrent = document.querySelector('.currentWindow');
+  divcurrent.classList.remove('currentWindow');
+  var dmwindow = document.getElementById(newhandle + 'dm');
+  dmwindow.classList.add('currentWindow');
+
 };
 
 actions.showchatwin = showchatwin;
@@ -118,17 +122,16 @@ var ulupdate = function(incobj){
     //fix below so it doesnt use string append
     if(!(oldliids.includes(newhandle+'li'))){
       actions.dmwincreator(newhandle);
+      if(newhandle === 'groupchat'){
+        document.getElementById('groupchatdm').classList.add('currentWindow');
+      }
       var unli = document.createElement('li');
       //need to add listener to unli to set display to block something and others to none.
       unli.innerText = newhandle; 
       unli.id = newhandle +'li';
       unli.setAttribute('class','unli');
       unli.addEventListener('click',function(){
-        console.log('event listener firing');
-        var divcurrent = document.querySelector('.currentWindow');
-        divcurrent.classList.remove('currentWindow');
-        var dmwindow = document.getElementById(newhandle + 'dm');
-        dmwindow.classList.add('currentWindow');
+        actions.showchatwin(newhandle);
       });
       //these also need style changes when hovered over and when corresponding chatwindow is open
       document.getElementById('userlist').appendChild(unli);

@@ -49,7 +49,7 @@ objactions.bcastmsg = bcastmsg;
 
 var updateul = function(){
   var outobj = {};
-  var ul = [];
+  var ul = ['groupchat'];
   for (var sock in clientsocks){
     if(clientsocks[sock].handle !== clientsocks[sock].sockid){
       ul.push(clientsocks[sock].handle);
