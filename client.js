@@ -81,18 +81,45 @@ var bcastmsg = function(incobj){
 
 actions.bcastmsg = bcastmsg;
 
+//may want to pull out all the dm win creation into seperate function?
+//how will un changes be handled in switching over dmwindows?-this can be next bbstep?
+
+var dmwincreator = function(incobjnewhandle){
+  var dmwin = document.createElement('div');
+  dmwin.setAttribute('class','chatwindows');
+  dmwin.style.display = 'none';
+  var dmwinli = document.createElement('li');
+  //below should be changed to add some id or something
+  //line below is for test purposes
+  dmwinli.innerText = 'This is the dm window for: '+incobjnewhandle;
+  dmwin.appendChild(dmwinli);
+  document.getElementById('chatframe').appendChild(dmwin);
+};
+
+actions.dmwincreator = dmwincreator;
+
 var ulupdate = function(incobj){
-  //remove child elems
- var curruserlist = document.getElementById('userlist');
- while (curruserlist.firstChild) {
-   curruserlist.removeChild(curruserlist.firstChild);
- }
-  var updatedul = incobj.ul;
-  for(var newhandle in updatedul){
-    var unli = document.createElement('li');
-    unli.innerText = updatedul[newhandle]; 
-    curruserlist.appendChild(unli);
+  //acceptable that I get elems by class name here?
+  var curruserlist = document.getElementsByClassName('unli');
+  var oldliids = [];
+  for (var i = 0;i < curruserlist.length; i++){
+    oldliids.push(curruserlist[i].id); 
   }
+  var incobjul = incobj.ul;
+  incobjul.forEach(function(newhandle){
+    //Also need to keep win displayed if that is the user that changes un - can be next bbstep
+    //fix below so it doesnt use string append
+    if(!(oldliids.includes(newhandle+'li'))){
+      actions.dmwincreator(newhandle);
+      var unli = document.createElement('li');
+      //need to add listener to unli to set display to block something and others to none.
+      unli.innerText = newhandle; 
+      unli.id = newhandle +'li';
+      unli.setAttribute('class','unli');
+      //these also need style changes when hovered over and when corresponding chatwindow is open
+      document.getElementById('userlist').appendChild(unli);
+    };
+  });
 };
 
 actions.ulupdate = ulupdate;
