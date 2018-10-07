@@ -86,8 +86,9 @@ actions.bcastmsg = bcastmsg;
 
 var dmwincreator = function(incobjnewhandle){
   var dmwin = document.createElement('div');
-  dmwin.setAttribute('class','chatwindows');
-  dmwin.style.display = 'none';
+  dmwin.setAttribute('class','chatWindow');
+  //dmwin.style.display = 'none';
+  dmwin.id = incobjnewhandle+'dm';
   var dmwinli = document.createElement('li');
   //below should be changed to add some id or something
   //line below is for test purposes
@@ -97,6 +98,12 @@ var dmwincreator = function(incobjnewhandle){
 };
 
 actions.dmwincreator = dmwincreator;
+
+var showchatwin = function(){
+  
+};
+
+actions.showchatwin = showchatwin;
 
 var ulupdate = function(incobj){
   //acceptable that I get elems by class name here?
@@ -116,6 +123,13 @@ var ulupdate = function(incobj){
       unli.innerText = newhandle; 
       unli.id = newhandle +'li';
       unli.setAttribute('class','unli');
+      unli.addEventListener('click',function(){
+        console.log('event listener firing');
+        var divcurrent = document.querySelector('.currentWindow');
+        divcurrent.classList.remove('currentWindow');
+        var dmwindow = document.getElementById(newhandle + 'dm');
+        dmwindow.classList.add('currentWindow');
+      });
       //these also need style changes when hovered over and when corresponding chatwindow is open
       document.getElementById('userlist').appendChild(unli);
     };

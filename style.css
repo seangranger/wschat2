@@ -1,4 +1,12 @@
 /*CSS Document*/
+.chatWindow {
+  display: none;
+}
+
+.currentWindow {
+  display: block;
+}
+
 #gridbox{
   height:450;
   width:520;
