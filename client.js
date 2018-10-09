@@ -80,7 +80,9 @@ socket.addEventListener('message', function(message) {
 });
 
 var bcastmsg = function(incobj){
-  console.log(incobj.msg);
+  var msg = document.createElement('li');
+  msg.innerText = incobj.sender+': '+incobj.msg;
+  document.getElementById('groupchatdm').appendChild(msg);
 };
 
 actions.bcastmsg = bcastmsg;
@@ -174,6 +176,7 @@ actions.ulupdate = ulupdate;
 var sendmssg = function (input) {
   var msgobj = {};
   msgobj.msg = input; 
+  msgobj.sender = handle;
   msgobj.type = 'bcastmsg';
   var json = JSON.stringify(msgobj);
   socket.send(json);
