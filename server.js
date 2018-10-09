@@ -57,7 +57,7 @@ var dmout = function(incobj){
   incobj.type = 'dmin';
   var json = JSON.stringify(incobj);
   for (var sock in clientsocks){
-    if(clientsocks[sock].handle === recip){
+    if(clientsocks[sock].handle === recip || clientsocks[sock].handle === incobj.sender){
       clientsocks[sock].socket.send(json);
     }
   }

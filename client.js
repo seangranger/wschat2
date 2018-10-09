@@ -44,7 +44,6 @@ var handleinput = function(){
       actcalled(arg);
   }}else{
     if(document.querySelector('.currentWindow').id !== 'groupchatdm'){
-      console.log('acknowledging a dm req');
       actions.dmout(input);
     }else{
       actions.sendmssg(input); 
@@ -130,9 +129,13 @@ var dmin = function(incobj){
   var sender = incobj.sender;
   //var senderwin = document.getElementById(sender+'dm');
   var incmsg = document.createElement('li');
-  incmsg.innerText = incobj.msg;
+  incmsg.innerText = sender+': '+incobj.msg;
       //why doesnt senderwin. below work?
-  document.getElementById(sender+'dm').appendChild(incmsg);
+  if(sender === handle){
+    document.getElementById(incobj.recip).appendChild(incmsg);
+  }else{
+    document.getElementById(sender+'dm').appendChild(incmsg);
+  }
 };
 
 actions.dmin = dmin;
