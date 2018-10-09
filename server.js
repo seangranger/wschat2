@@ -36,6 +36,7 @@ var reqhandlechange = function(incobj){
 
 objactions.reqhandlechange = reqhandlechange;
 
+//this is sending unique ids and shouldnt be
 var bcastmsg = function(incobj){
   var json = JSON.stringify(incobj);
   for(var sock in clientsocks){
@@ -46,6 +47,23 @@ var bcastmsg = function(incobj){
 };
 
 objactions.bcastmsg = bcastmsg;
+
+var dmout = function(incobj){
+  var msg = incobj.msg;
+  //I think that incobj has unique id so it may need to be stripped and repackaged but well test for now
+  var recip = incobj.recip.substring(0,incobj.recip.length-2);
+  //what indicates sender in incobj?
+  incobj.sender = clientsocks[incobj.id].handle;
+  incobj.type = 'dmin';
+  var json = JSON.stringify(incobj);
+  for (var sock in clientsocks){
+    if(clientsocks[sock].handle === recip){
+      clientsocks[sock].socket.send(json);
+    }
+  }
+};
+
+objactions.dmout = dmout; 
 
 var updateul = function(){
   var outobj = {};

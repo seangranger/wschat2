@@ -43,7 +43,12 @@ var handleinput = function(){
       var arg = input.substring(input.indexOf(input.split(' ')[1]),input.length).trim();
       actcalled(arg);
   }}else{
-    actions['sendmssg'](input); 
+    if(document.querySelector('.currentWindow').id !== 'groupchatdm'){
+      console.log('acknowledging a dm req');
+      actions.dmout(input);
+    }else{
+      actions.sendmssg(input); 
+    }
   }
 };
 
@@ -109,6 +114,29 @@ var showchatwin = function(newhandle){
 
 actions.showchatwin = showchatwin;
 
+var dmout = function(input) {
+  var msgobj = {};
+  msgobj.type = 'dmout';
+  msgobj.recip = document.querySelector('.currentWindow').id;
+  msgobj.msg = input;
+  var json = JSON.stringify(msgobj);
+  socket.send(json);
+  document.getElementById('chatinput').value = '';
+};
+
+actions.dmout = dmout;
+
+var dmin = function(incobj){
+  var sender = incobj.sender;
+  //var senderwin = document.getElementById(sender+'dm');
+  var incmsg = document.createElement('li');
+  incmsg.innerText = incobj.msg;
+      //why doesnt senderwin. below work?
+  document.getElementById(sender+'dm').appendChild(incmsg);
+};
+
+actions.dmin = dmin;
+
 var ulupdate = function(incobj){
   //acceptable that I get elems by class name here?
   var curruserlist = document.getElementsByClassName('unli');
@@ -126,7 +154,6 @@ var ulupdate = function(incobj){
         document.getElementById('groupchatdm').classList.add('currentWindow');
       }
       var unli = document.createElement('li');
-      //need to add listener to unli to set display to block something and others to none.
       unli.innerText = newhandle; 
       unli.id = newhandle +'li';
       unli.setAttribute('class','unli');
@@ -144,7 +171,6 @@ actions.ulupdate = ulupdate;
 var sendmssg = function (input) {
   var msgobj = {};
   msgobj.msg = input; 
-  //line below is for server functionality testing only
   msgobj.type = 'bcastmsg';
   var json = JSON.stringify(msgobj);
   socket.send(json);
