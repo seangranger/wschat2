@@ -21,8 +21,19 @@ var reqhandlechange = function(incobj){
       outobj.msg = 'That user name is unavailable. Please choose a different one.'; 
       var json = JSON.stringify(outobj);
       clientsocks[incobj.id].socket.send(json);
+      //can below be removed?
       return;
     }else{
+      var unchangeobj = {};
+      //should this be inside an if that only happens when its not the initial setting?
+      unchangeobj.oldun = clientsocks[incobj.id].handle 
+      unchangeobj.newun = incobj.reqdhandle;
+      console.log(unchangeobj);
+      if(clientsocks[incobj.id].handle === incobj.id){
+        unchangeobj.unchange = false;
+      }else{
+        unchangeobj.unchange = true;
+      }
       clientsocks[incobj.id].handle = incobj.reqdhandle;
       var outobj = {};
       outobj.type = 'unconfirm';
@@ -30,7 +41,9 @@ var reqhandlechange = function(incobj){
       outobj.msg = 'your handle has been changed to: '+clientsocks[incobj.id].handle;
       var json = JSON.stringify(outobj);
       clientsocks[incobj.id].socket.send(json);
-      objactions.updateul();
+      console.log(clientsocks[incobj.id].handle);
+      console.log(incobj.id);
+      objactions.updateul(unchangeobj);
     }
   };
 
@@ -65,7 +78,7 @@ var dmout = function(incobj){
 
 objactions.dmout = dmout; 
 
-var updateul = function(){
+var updateul = function(unchangeobj){
   var outobj = {};
   var ul = ['groupchat'];
   for (var sock in clientsocks){
@@ -75,8 +88,11 @@ var updateul = function(){
   }
   outobj.type = 'ulupdate';
   outobj.ul = ul;
+  outobj.unchange = unchangeobj;
   var json = JSON.stringify(outobj);
   for (var sock in clientsocks){
+  //is this being handled somewhere else and if not shouldnt it be?
+  //note this is different from line above 
     if(clientsocks[sock].handle !== clientsocks[sock].sockid){
       clientsocks[sock].socket.send(json);
     }

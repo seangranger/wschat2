@@ -87,7 +87,6 @@ var bcastmsg = function(incobj){
 
 actions.bcastmsg = bcastmsg;
 
-//may want to pull out all the dm win creation into seperate function?
 //how will un changes be handled in switching over dmwindows?-this can be next bbstep?
 
 var dmwincreator = function(incobjnewhandle){
@@ -99,6 +98,10 @@ var dmwincreator = function(incobjnewhandle){
   //below should be changed to add some id or something
   //line below is for test purposes
   dmwinli.innerText = 'This is the dm window for: '+incobjnewhandle;
+  //Below isnt goin to work because itll be set on all chatwins
+  /*
+  dmwinli.id = 'userindicator';
+  */
   dmwin.appendChild(dmwinli);
   document.getElementById('chatframe').appendChild(dmwin);
 };
@@ -144,8 +147,26 @@ actions.dmin = dmin;
 
 var ulupdate = function(incobj){
   //acceptable that I get elems by class name here?
-  var curruserlist = document.getElementsByClassName('unli');
   var oldliids = [];
+  var unchangeobj = incobj.unchange;
+  if(unchangeobj.unchange){
+    var un2change = unchangeobj.oldun;
+    var un2change2 = unchangeobj.newun;
+    document.getElementById(un2change+'dm').id = un2change2+'dm';
+    var updatealert = document.createElement('li');
+    updatealert.innerText = un2change+' has changed their handle to: '+un2change2;
+    document.getElementById(un2change2+'dm').appendChild(updatealert);
+    document.getElementById('userlist').removeChild(document.getElementById(un2change+'li'));
+    var newunli = document.createElement('li');
+    newunli.id = un2change2+'li';
+    newunli.setAttribute('class','unli');
+    newunli.innerText = un2change2;
+    newunli.addEventListener('click',function(){
+        actions.showchatwin(un2change2);
+    });
+    document.getElementById('userlist').appendChild(newunli);
+  }
+  var curruserlist = document.getElementsByClassName('unli');
   for (var i = 0;i < curruserlist.length; i++){
     oldliids.push(curruserlist[i].id); 
   }
