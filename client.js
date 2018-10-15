@@ -87,21 +87,15 @@ var bcastmsg = function(incobj){
 
 actions.bcastmsg = bcastmsg;
 
-//how will un changes be handled in switching over dmwindows?-this can be next bbstep?
 
 var dmwincreator = function(incobjnewhandle){
   var dmwin = document.createElement('div');
   dmwin.setAttribute('class','chatWindow');
-  //dmwin.style.display = 'none';
   dmwin.id = incobjnewhandle+'dm';
   var dmwinli = document.createElement('li');
   //below should be changed to add some id or something
   //line below is for test purposes
   dmwinli.innerText = 'This is the dm window for: '+incobjnewhandle;
-  //Below isnt goin to work because itll be set on all chatwins
-  /*
-  dmwinli.id = 'userindicator';
-  */
   dmwin.appendChild(dmwinli);
   document.getElementById('chatframe').appendChild(dmwin);
 };
@@ -135,7 +129,6 @@ var dmin = function(incobj){
   //var senderwin = document.getElementById(sender+'dm');
   var incmsg = document.createElement('li');
   incmsg.innerText = sender+': '+incobj.msg;
-      //why doesnt senderwin. below work?
   if(sender === handle){
     document.getElementById(incobj.recip).appendChild(incmsg);
   }else{
@@ -172,7 +165,6 @@ var ulupdate = function(incobj){
   }
   var incobjul = incobj.ul;
   incobjul.forEach(function(newhandle){
-    //Also need to keep win displayed if that is the user that changes un - can be next bbstep
     //fix below so it doesnt use string append
     if(!(oldliids.includes(newhandle+'li'))){
       actions.dmwincreator(newhandle);
@@ -193,6 +185,27 @@ var ulupdate = function(incobj){
 };
 
 actions.ulupdate = ulupdate;
+
+var removeuser = function(incobj){
+  //DOES NOT REMOVE DM WIN SO IF WE WANT TO DO THAT IT NEEDS TO BE ADDED
+  //INSTEAD OF REMOVING THIS COULD JUST BE AN IDLE INDICATOR IN UL
+  var user2remove = incobj.user2remove;
+//  document.getElementById('userlist').removeChild(document.getElementById(user2remove+'li'));
+  var userinactive = document.createElement('li');
+  userinactive.innerText = user2remove+' has logged off';
+  document.getElementById(user2remove+'dm').appendChild(userinactive);
+};
+
+actions.removeuser = removeuser; 
+
+var inactivealert = function(incobj){
+  alert(incobj.recip.substring(0,incobj.recip.length - 2)+' is inactive and will not receive this until they return.(In actuality its going into a black hole right now so this would need to be updated when we have a way to deal with logged off users)');
+  var msgli = document.createElement('li');
+  msgli.innerText = incobj.msg;
+  document.getElementById(incobj.recip).appendChild(msgli);
+};
+
+actions.inactivealert = inactivealert;
 
 var sendmssg = function (input) {
   var msgobj = {};

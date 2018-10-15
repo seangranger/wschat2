@@ -25,7 +25,6 @@ var reqhandlechange = function(incobj){
       return;
     }else{
       var unchangeobj = {};
-      //should this be inside an if that only happens when its not the initial setting?
       unchangeobj.oldun = clientsocks[incobj.id].handle 
       unchangeobj.newun = incobj.reqdhandle;
       console.log(unchangeobj);
@@ -67,7 +66,17 @@ var dmout = function(incobj){
   var recip = incobj.recip.substring(0,incobj.recip.length-2);
   //what indicates sender in incobj?
   incobj.sender = clientsocks[incobj.id].handle;
-  incobj.type = 'dmin';
+  var inactive;
+  for (var client in inactiveusers){
+    if (inactiveusers[client].handle === recip){
+      inactive = true;
+    }
+  }
+  if(inactive){
+    incobj.type = 'inactivealert';
+  }else{
+    incobj.type = 'dmin';
+  }
   var json = JSON.stringify(incobj);
   for (var sock in clientsocks){
     if(clientsocks[sock].handle === recip || clientsocks[sock].handle === incobj.sender){
@@ -77,6 +86,20 @@ var dmout = function(incobj){
 };
 
 objactions.dmout = dmout; 
+
+var removeuser = function(user2remove){
+  var outobj = {};
+  outobj.type = 'removeuser';
+  outobj.user2remove = user2remove; 
+  var json = JSON.stringify(outobj);
+  for (var sock in clientsocks){
+    if(clientsocks[sock].handle !== clientsocks[sock].sockid){
+      clientsocks[sock].socket.send(json);
+    }
+  }
+};
+
+objactions.removeuser = removeuser;
 
 var updateul = function(unchangeobj){
   var outobj = {};
@@ -108,6 +131,8 @@ var handleincobj = function (incobj) {
   action(incobj);
 };
 
+var inactiveusers = {};
+
 server.on('connection',function(socket){
   //crypto.randomBytes returns a buffer ---- https://nodejs.org/api/buffer.html
   var sockid = crypto.randomBytes(7).toString('hex');
@@ -125,14 +150,18 @@ server.on('connection',function(socket){
     handleincobj(incobj);
   });
   //tab close is not closing socket?
-/*
-  socket.on('end', function(){
+  socket.on('close', function(){
     //Can we actually assume it was closed by client?
     console.log('Connection closed by client.');
-    console.log('Removing '+clientsocks[sockid]+' ('+clientsocks[sockid].handle+') from users');
-    delete clientsocks[sockid];
+    console.log('Removing ('+clientsocks[sockid].handle+') from users');
+    if(clientsocks[sockid].handle != sockid){
+      inactiveusers[sockid] = clientsocks[sockid];
+      delete clientsocks[sockid];
+      removeuser(inactiveusers[sockid].handle);
+    }else{
+      delete clientsocks[sockid];
+    }
   });
-  */
 });
 
 process.stdin.on('data', function (data) {
